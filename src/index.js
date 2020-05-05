@@ -1,54 +1,61 @@
-const isFlush = (cards) =>
-  Object.values(
-    cards
-      .map(({ suit }) => suit)
-      .reduce((acc, curr) => ({ ...acc, [curr]: (acc[curr] || 0) + 1 }), {})
-  )[0] === 5;
+import {
+  add,
+  always,
+  ap,
+  ascend,
+  both,
+  compose,
+  concat,
+  cond,
+  converge,
+  countBy,
+  equals,
+  filter,
+  head,
+  identity,
+  includes,
+  length,
+  path,
+  pluck,
+  prop,
+  range,
+  sort,
+  T,
+  values,
+  all,
+} from 'ramda';
 
-const getRank = ({ rank }) => rank;
+const isFlush = compose(
+  converge(all, [compose(equals, head), identity]),
+  pluck('suit')
+);
 
-const getSortedRanks = (cards) => cards.map(getRank).sort((a, b) => a - b);
+const getSortedRanks = compose(sort(ascend(identity)), pluck('rank'));
+const isStraight = compose(
+  ap(equals, compose(converge(range, [identity, add(5)]), head)),
+  getSortedRanks
+);
+const isRoyal = compose(equals([1, 10, 11, 12, 13]), getSortedRanks);
 
-const isStraight = (cards) =>
-  getSortedRanks(cards).reduce(
-    (acc, curr, ix, arr) => acc && (ix === 0 || curr === arr[ix - 1] + 1),
-    true
-  );
+const getRankIndexValues = compose(values, countBy(prop('rank')));
 
-const isRoyal = (cards) =>
-  getSortedRanks(cards).reduce(
-    (acc, curr, ix) => acc && curr === [1, 10, 11, 12, 13][ix],
-    true
-  );
+const isFourOfAKind = compose(includes(4), getRankIndexValues);
+const isThreeOfAKind = compose(includes(3), getRankIndexValues);
+const isFullHouse = compose(both(includes(3), includes(2)), getRankIndexValues);
 
-const getRankIndexValues = (cards) =>
-  Object.values(
-    cards
-      .map(getRank)
-      .reduce((acc, curr) => ({ ...acc, [curr]: (acc[curr] || 0) + 1 }), {})
-  );
+const getPairs = compose(length, filter(equals(2)), getRankIndexValues);
+const isTwoPair = compose(equals(2), getPairs);
+const isPair = compose(equals(1), getPairs);
 
-const isFourOfAKind = (cards) => getRankIndexValues(cards).includes(4);
-const isThreeOfAKind = (cards) => getRankIndexValues(cards).includes(3);
-const isFullHouse = (cards) =>
-  getRankIndexValues(cards).includes(3) &&
-  getRankIndexValues(cards).includes(2);
-
-const getPairs = (cards) =>
-  getRankIndexValues(cards).filter((n) => n === 2).length;
-
-const isTwoPair = (cards) => getPairs(cards) === 2;
-const isPair = (cards) => getPairs(cards) === 1;
-
-export default function classifyHand(cards) {
-  if (isRoyal(cards) && isFlush(cards)) return 'royalFlush';
-  if (isStraight(cards) && isFlush(cards)) return 'straightFlush';
-  if (isFourOfAKind(cards)) return 'fourOfAKind';
-  if (isFullHouse(cards)) return 'fullHouse';
-  if (isFlush(cards)) return 'flush';
-  if (isStraight(cards)) return 'straight';
-  if (isThreeOfAKind(cards)) return 'threeOfAKind';
-  if (isTwoPair(cards)) return 'twoPair';
-  if (isPair(cards)) return 'pair';
-  return 'none';
-}
+export default cond([
+  [both(isRoyal, isFlush), always('royalFlush')],
+  [both(isStraight, isFlush), always('straightFlush')],
+  [isFlush, always('flush')],
+  [isFourOfAKind, always('fourOfAKind')],
+  [isFullHouse, always('fullHouse')],
+  [isStraight, always('straight')],
+  [isThreeOfAKind, always('threeOfAKind')],
+  [isTwoPair, always('twoPair')],
+  [isPair, always('pair')],
+  [T, always('none')],
+]);

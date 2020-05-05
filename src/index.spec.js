@@ -11,6 +11,28 @@ test('recognizes a royal flush', () => {
   expect(result).toBe('royalFlush');
 });
 
+// test('recognizes a royal flush', () => {
+//   const result = classifyHand([
+//     { rank: 10, suit: 'diamonds' },
+//     { rank: 13, suit: 'diamonds' },
+//     { rank: 1, suit: 'diamonds' },
+//     { rank: 12, suit: 'diamonds' },
+//     { rank: 11, suit: 'diamonds' },
+//   ]);
+//   expect(result).toBe('royalFlush:diamonds');
+// });
+
+// test('recognizes a royal flush', () => {
+//   const result = classifyHand([
+//     { rank: 10, suit: 'spades' },
+//     { rank: 13, suit: 'spades' },
+//     { rank: 1, suit: 'spades' },
+//     { rank: 12, suit: 'spades' },
+//     { rank: 11, suit: 'spades' },
+//   ]);
+//   expect(result).toBe('royalFlush:spades');
+// });
+
 test('recognizes a straight flush', () => {
   const result = classifyHand([
     { rank: 2, suit: 'clubs' },
