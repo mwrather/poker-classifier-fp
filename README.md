@@ -2,6 +2,13 @@
 
 This repository gives code samples illustrating how to refactor a small program using functional principles and the [Ramda](https://ramdajs.com/) JavaScript library.
 
+This program classifies poker hands -- groups of five cards are classified as a royal flush, straight flush, and so on. It is implemented in imperative TypeScript,
+and alternatively in:
+
+* `conventional.ts` - using native methods on `Array.prototype`
+* `ramda.ts` - using the [RamdaJS](https://ramdajs.com/) library
+* `homegrown.ts` - using a homegrown, zero-dependency FP library
+
 ## System Requirements
 
 - [`git`](https://git-scm.com/)
@@ -15,15 +22,7 @@ Clone this repo and install dependencies.
 ```shell
 git clone https://github.com/mwrather/poker-classifier-fp.git
 cd poker-classifier-fp
-npm install
-```
-
-Checkout
-
-```shell
-git checkout start         # the bare repo with no tests
-git checkout conventional  # pass tests with a conventional approach
-git checkout fp            # refactor using ramda
+npm i
 ```
 
 ## Working
@@ -31,6 +30,5 @@ git checkout fp            # refactor using ramda
 As you experiment with different implementations, use the tests to check your work:
 
 ```shell
-npm run test        # test the implementation once
-npm run test:watch  # re-run tests on file save
+npm test        # test the implementation once
 ```
